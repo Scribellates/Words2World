@@ -1,0 +1,1 @@
+"""WordTraductor package root."""

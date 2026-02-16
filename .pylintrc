@@ -1,0 +1,11 @@
+[MASTER]
+ignore=venv,.venv
+
+[MESSAGES CONTROL]
+disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
+
+[FORMAT]
+max-line-length=88
+
+[DESIGN]
+max-branches=15
