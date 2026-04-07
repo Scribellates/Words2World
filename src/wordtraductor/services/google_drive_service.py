@@ -29,6 +29,20 @@ class GoogleDriveService:
         buffer.seek(0)
         return buffer
 
+    def export_file(self, file_id: str) -> io.BytesIO:
+        """Export a Google Docs native file as .docx."""
+        request = self._service.files().export_media(
+            fileId=file_id,
+            mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+        buffer = io.BytesIO()
+        downloader = MediaIoBaseDownload(buffer, request)
+        done = False
+        while not done:
+            _, done = downloader.next_chunk()
+        buffer.seek(0)
+        return buffer
+
     def upload_file(
         self,
         file_bytes: io.BytesIO,

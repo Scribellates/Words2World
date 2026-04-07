@@ -5,7 +5,7 @@ from datetime import datetime
 
 from wordtraductor.models.config import Config
 from wordtraductor.models.document import Document
-from wordtraductor.models.document_format import SUPPORTED_FORMATS, detect_format
+from wordtraductor.models.document_format import SUPPORTED_FORMATS, DocumentFormat, detect_format
 from wordtraductor.models.language_pair import SUPPORTED_LANGUAGES
 from wordtraductor.models.translation_task import TranslationStatus, TranslationTask
 from wordtraductor.services.format_converter import FormatConverter
@@ -86,9 +86,17 @@ class TranslationWorkflow:
         )
 
         self._logger.info("Downloading document metadata and content")
-        file_bytes = self._drive.download_file(file_id)
+        _DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        if document_format == DocumentFormat.GOOGLE_DOCS:
+            file_bytes = self._drive.export_file(file_id)
+            effective_format = DocumentFormat.DOCX.value
+            effective_mime = _DOCX_MIME
+        else:
+            file_bytes = self._drive.download_file(file_id)
+            effective_format = document.format.value
+            effective_mime = document.mime_type
         docx = self._parser.load_with_conversion(
-            file_bytes, document.format.value, self._converter, self._config.tmp_dir
+            file_bytes, effective_format, self._converter, self._config.tmp_dir
         )
         runs = self._parser.iter_runs(docx)
         texts = [run.text for run in runs]
@@ -103,10 +111,10 @@ class TranslationWorkflow:
 
         upload_result = self._drive.upload_file(
             file_bytes=result_bytes,
-            mime_type=document.mime_type,
+            mime_type=effective_mime,
             name=output_name_final,
             folder_id=self._config.drive_folder_id,
-            overwrite_file_id=file_id if overwrite else None,
+            overwrite_file_id=file_id if (overwrite and document_format != DocumentFormat.GOOGLE_DOCS) else None,
         )
 
         task.completed_at = datetime.utcnow()

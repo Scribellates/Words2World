@@ -17,7 +17,9 @@ class TranslatorService:
         installed_langs = argostranslate.translate.get_installed_languages()
         from_lang = next((l for l in installed_langs if l.code == from_code), None)
         if from_lang:
-            to_lang = next((t for t in from_lang.translations_to if t.code == to_code), None)
+            to_lang = next(
+                (t for t in from_lang.translations_to if t.to_lang.code == to_code), None
+            )
             if to_lang:
                 self._installed.add((from_code, to_code))
                 return

@@ -11,7 +11,7 @@ setup(
         "python-docx==0.8.11",
         "google-api-python-client==2.100.0",
         "google-auth-oauthlib==1.2.0",
-        "google-cloud-translate==3.11.0",
+        "argostranslate",
         "click==8.1.7",
         "tqdm==4.66.1",
         "python-dotenv==1.0.0",
