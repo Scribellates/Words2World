@@ -41,7 +41,7 @@ def translate_command(
         creds = GoogleAuthService(config).get_credentials([DRIVE_SCOPE])
 
         drive_service = GoogleDriveService(creds)
-        translator_service = TranslatorService(creds)
+        translator_service = TranslatorService()
         parser = WordParser()
         converter = FormatConverter()
         history = HistoryService(config)
